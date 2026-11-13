@@ -8,6 +8,7 @@
     const audio=$('audio'),track=window.ArtistWaveLibrary?.getCurrent?.()||null;
     const duration=Number.isFinite(audio.duration)?audio.duration:0;
     return {
+      playlists:window.ArtistWavePlaylists?.list?.()||[],
       ready:true,title:track?.title||'Nothing playing yet',
       artist:track?.artist||'Find a song in ArtistWave',
       cover:typeof track?.artwork==='string'&&/^https:\/\//i.test(track.artwork)?track.artwork:'',
@@ -28,6 +29,7 @@
   function command(action,value){
     const audio=$('audio');
     if(action==='play')$('playButton').click();
+    else if(action==='playlist')window.ArtistWavePlaylists?.play?.(value);
     else if(action==='next')$('nextButton').click();
     else if(action==='previous')$('previousButton').click();
     else if(action==='favorite'&&!$('favoriteCurrent').disabled)$('favoriteCurrent').click();

@@ -5,7 +5,10 @@
   const $=id=>document.getElementById(id);
   const tabs={audio:$('modeAudio'),studio:$('studioNav'),youtube:$('modeYoutube')};
   const frame=$('youtubeFrame');
+  const apiKeyStorage='artistwave.youtubeDataApiKey';
   let mode='audio';
+  function readYouTubeApiKey(){try{return window.localStorage?.getItem(apiKeyStorage)||''}catch{return ''}}
+  function writeYouTubeApiKey(key){try{if(key)window.localStorage?.setItem(apiKeyStorage,key);else window.localStorage?.removeItem(apiKeyStorage);return Boolean(window.localStorage)}catch{return false}}
   function parseYouTubeUrl(value){
     let url;
     try{url=new URL(String(value||'').trim())}catch{return null}
@@ -38,6 +41,49 @@
   function stopVideo(){
     frame.removeAttribute('src');
     $('youtubePlayerRegion').hidden=true;
+  }
+  function setYouTubeMessage(message,isError=false){
+    $('youtubeMessage').textContent=message;
+    $('youtubeMessage').classList.toggle('error',isError);
+  }
+  function renderYouTubeResults(items){
+    const results=$('youtubeSearchResults');
+    results.replaceChildren();
+    for(const item of items){
+      const video=item.id?.videoId;
+      const snippet=item.snippet;
+      if(!video||!snippet)continue;
+      const button=document.createElement('button');
+      button.type='button';button.className='youtube-result';
+      const image=document.createElement('img');
+      image.src=snippet.thumbnails?.medium?.url||snippet.thumbnails?.default?.url||'';
+      image.alt='';image.loading='lazy';
+      const copy=document.createElement('span');copy.className='youtube-result-copy';
+      const title=document.createElement('strong');title.textContent=snippet.title||'Untitled video';
+      const channel=document.createElement('small');channel.textContent=snippet.channelTitle||'YouTube';
+      copy.append(title,channel);button.append(image,copy);
+      button.addEventListener('click',()=>{
+        window.ArtistWaveStudioHost?.pauseMain?.();
+        frame.src='https://www.youtube.com/embed/'+encodeURIComponent(video);
+        $('youtubePlayerRegion').hidden=false;
+        setYouTubeMessage('Now playing in YouTube’s official player. Some videos do not allow embedding.');
+      });
+      results.append(button);
+    }
+  }
+  async function searchYouTube(query){
+    const key=$('youtubeApiKey').value.trim()||readYouTubeApiKey();
+    if(!key){$('youtubeApiSetup').open=true;setYouTubeMessage('Add a YouTube Data API key in Search setup to show results here.',true);return}
+    const results=$('youtubeSearchResults');results.replaceChildren();
+    setYouTubeMessage('Searching YouTube…');
+    try{
+      const params=new URLSearchParams({part:'snippet',type:'video',maxResults:'12',q:query,key});
+      const response=await fetch('https://www.googleapis.com/youtube/v3/search?'+params);
+      const data=await response.json();
+      if(!response.ok)throw new Error(data.error?.message||'YouTube search could not be completed.');
+      renderYouTubeResults(data.items||[]);
+      setYouTubeMessage(data.items?.length?'Choose a video to play it here.':'No videos found. Try another search.');
+    }catch(error){setYouTubeMessage(error.message||'YouTube search failed. Check the API key and try again.',true)}
   }
   function setMode(target){
     if(!tabs[target])return;
@@ -86,19 +132,25 @@
     event.preventDefault();
     const embed=parseYouTubeUrl($('youtubeUrl').value);
     if(!embed){
-      $('youtubeMessage').textContent='Paste a valid YouTube video or playlist HTTPS link.';
-      $('youtubeMessage').classList.add('error');
+      setYouTubeMessage('Paste a valid YouTube video or playlist HTTPS link.',true);
       stopVideo();
       return;
     }
     window.ArtistWaveStudioHost?.pauseMain?.();
-    $('youtubeMessage').classList.remove('error');
-    $('youtubeMessage').textContent='Video loaded in the official YouTube player. Some videos do not allow embedding.';
+    setYouTubeMessage('Video loaded in the official YouTube player. Some videos do not allow embedding.');
     frame.src=embed;
     $('youtubePlayerRegion').hidden=false;
   });
   $('youtubeSearchForm').addEventListener('submit',event=>{
-    if(!$('youtubeSearch').value.trim())event.preventDefault();
+    event.preventDefault();
+    const query=$('youtubeSearch').value.trim();
+    if(query)searchYouTube(query);
+  });
+  $('youtubeApiKey').value=readYouTubeApiKey();
+  $('youtubeApiSave').addEventListener('click',()=>{
+    const key=$('youtubeApiKey').value.trim();
+    const saved=writeYouTubeApiKey(key);
+    setYouTubeMessage(key?(saved?'YouTube API key saved in this browser. Search for a video.':'Browser storage is unavailable. The key will work for this session only.'):'Saved YouTube API key removed.');
   });
   window.ArtistWaveNavigation={setMode,parseYouTubeUrl,updateYouTubeAccount};
   document.body.dataset.mode='audio';

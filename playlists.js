@@ -246,6 +246,9 @@
     window.ArtistWaveCloud.getPlaylists=()=>cleanPlaylists(playlists);
     render();
   }
-  window.ArtistWavePlaylists={addTrack,showLibrary,showAudio,cleanTrack,cleanPlaylists};
+  window.ArtistWavePlaylists={addTrack,showLibrary,showAudio,cleanTrack,cleanPlaylists,
+    list:()=>playlists.map(p=>({id:p.id,name:p.name,count:p.tracks.length})),
+    play:id=>{if(!playlists.some(p=>p.id===id))return;selected=id;playPlaylist(false)}
+  };
   init();
 })();

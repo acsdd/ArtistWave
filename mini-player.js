@@ -124,6 +124,16 @@
         $('miniArtPlaceholder').hidden=false;
       }
     }
+    const saved=$('miniPlaylists');
+    if(saved && saved.dataset.signature!==JSON.stringify(state.playlists||[])){
+      saved.dataset.signature=JSON.stringify(state.playlists||[]);saved.replaceChildren();
+      for(const playlist of state.playlists||[]){
+        const button=document.createElement('button');button.type='button';button.className='queue-song';
+        button.textContent=playlist.name+' · '+playlist.count+' tracks';
+        button.onclick=()=>send('playlist',playlist.id);saved.append(button);
+      }
+      if(!saved.children.length)saved.textContent='No saved playlists yet.';
+    }
     updateQueue(state.queue||[],state.selected,state.smartQueue||[]);
   }
   const bind=(id,action)=>$(id).addEventListener('click',()=>send(action));

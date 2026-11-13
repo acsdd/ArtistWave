@@ -1,6 +1,17 @@
 # ArtistWave 🎵
 
-A local, browser-based music player that lets you **choose the correct artist or recording** before creating a playlist. Searches artist identities using MusicBrainz and publicly available audio recordings on the Internet Archive.
+**Your artist, your station.**
+
+ArtistWave is a browser music workspace for exploring artists, genres and eras, previewing recordings from supported sources when available, and organizing online and local tracks into playlists. It also includes an in-app YouTube video search and player, a compact player, and a Showdance routine-planning workspace.
+
+- Choose the artist identity you mean before searching recordings.
+- Browse curated styles, eras and artist suggestions.
+- Save tracks to favorites and playlists, or add audio files from your device.
+- Keep local audio on your device. Optional Google Drive sync stores library metadata, not audio files.
+- Use the compact player or install ArtistWave as a browser app where supported.
+- Search YouTube inside its own workspace and play videos with YouTube’s official embedded player. Search requires your own restricted YouTube Data API key; it is saved in this browser only.
+
+Online recording availability and attribution vary by provider and item; ArtistWave does not promise a complete commercial catalog. Check the source’s terms and the rights for a specific recording before public performance or reuse.
 
 ## Getting started
 
@@ -21,8 +32,8 @@ For browsers that restrict requests on `file://` pages, run `python -m http.serv
 - Browser-local favorites (online recordings)
 - Local audio file import; files remain on your device
 - Responsive dark layout
-- YouTube **search link** for selected artists (not embedded YouTube playback)
-- No API key required
+- YouTube Data API search results shown inside ArtistWave, with selected videos played in YouTube’s official embedded player
+- Optional per-browser YouTube Data API key for video search; restrict it to the ArtistWave site in Google Cloud
 
 ## Limitations
 
@@ -39,7 +50,7 @@ This project does not download from commercial streaming platforms or bypass lic
 
 ## Version
 
-**v1.1 test build** — artist-choice search before playlist loading. Search and streaming require real-world browser testing across providers.
+**v3.3 private preview.** Provider and account flows still need a clean-browser release pass.
 
 ## Artist / recording images (v1.2)
 
@@ -69,16 +80,17 @@ This repository includes [an automatic deployment workflow](.github/workflows/pa
 
 **One-time repository setup:** Open **Settings → Pages**, and under **Build and deployment** select **GitHub Actions**. Ensure GitHub Actions is enabled for this repository. If the repository is private, Pages eligibility depends on your GitHub plan; making it public is an option but also exposes the source code.
 
-Once the workflow succeeds, the expected site address is **https://28121978444.github.io/ArtistWave/**. This URL is not guaranteed to work until Pages is enabled and a deployment has succeeded.
+Once the workflow succeeds, the expected site address is **https://acsdd.github.io/ArtistWave/**. This URL is not guaranteed to work until Pages is enabled and a deployment has succeeded.
 
-ArtistWave is a static client-side app. Online MusicBrainz/Internet Archive requests require an Internet connection and may be affected by browser cross-origin restrictions or third-party service availability. No API keys or credentials are required or stored in the repository.
+ArtistWave is a static client-side app. Online MusicBrainz/Internet Archive requests require an Internet connection and may be affected by browser cross-origin restrictions or third-party service availability. The optional YouTube search key is configured by each user in their browser; it is not part of this repository. Google Drive sync uses a public OAuth client ID and requests only the sign-in and private Drive app-data scopes described in the app. No client secret belongs in this static site.
 
-### Troubleshooting a 404 on GitHub Pages
+## Privacy and support
 
-If `https://28121978444.github.io/ArtistWave/` shows **There isn't a GitHub Pages site here**, the repository may be public without Pages itself being enabled. On 2026-11-06 the deployment workflow's **Configure GitHub Pages** step failed with **Get Pages site failed — Not Found**. The JavaScript syntax check and site-file preparation passed before that step.
+Read the [ArtistWave privacy notice](privacy.html) for details about browser storage, local files, online providers, YouTube search and optional Google Drive sync. For help or to report a problem, use [ArtistWave GitHub Issues](https://github.com/acsdd/ArtistWave/issues). The issue tracker will be available to public users when repository access is opened for release.
 
-**One-time fix (repository owner):** Go to [Settings → Pages](https://github.com/28121978444/ArtistWave/settings/pages) and set **Build and deployment → Source → GitHub Actions**. This creates/configures the Pages site. Then use [Actions → Deploy ArtistWave to GitHub Pages](https://github.com/28121978444/ArtistWave/actions/workflows/pages.yml) to rerun the failed job or choose **Run workflow** on `main`. GitHub's default `GITHUB_TOKEN` cannot create a new Pages site simply by setting `enablement: true` in the workflow; a user must enable it in repository settings unless a separate credential with administration and Pages permissions is configured. No such credential should be added to the site.
+### If the hosted site is unavailable
 
+Check that GitHub Pages is enabled with **GitHub Actions** as its deployment source in the maintained `acsdd/ArtistWave` repository, then confirm the latest deployment workflow completed successfully. The expected address is `https://acsdd.github.io/ArtistWave/`; availability depends on repository Pages settings and account eligibility. Do not add a Google client secret to this static site.
 ## Genre movements and showdance discovery (v1.7)
 
 The left sidebar now browses a curated selection in this order:
@@ -127,7 +139,7 @@ Google authorization cannot work until a Google Cloud project and browser OAuth 
 
 1. Open [Google Cloud Console](https://console.cloud.google.com/), create/select a Google Cloud project, and **enable the Google Drive API**.
 2. Configure the Google Auth Platform OAuth consent screen for the project. Add the scopes `openid`, `email`, `profile` and `https://www.googleapis.com/auth/drive.appdata`; add test users if the consent screen is in Testing status. Google's review/publication requirements apply if the app is made broadly available.
-3. Create an OAuth **Web application** client. Under **Authorized JavaScript origins**, add `https://28121978444.github.io` (the origin, **not** the `/ArtistWave/` path). For localhost testing, add the exact localhost origin. Use no client secret in this public app.
+3. Create an OAuth **Web application** client. Under **Authorized JavaScript origins**, add `https://acsdd.github.io` (the origin, **not** the `/ArtistWave/` path). For localhost testing, add the exact localhost origin. Use no client secret in this public app.
 4. Set the public OAuth **client ID** in `index.html`, in the `<meta name="google-oauth-client-id" content="">` tag's `content` attribute, and publish the site. Alternatively, for a browser-only trial enter the ID in the sidebar's **Google Drive sync setup** field. Client IDs are public identifiers, not secrets.
 5. On the site, click **Sign in with Google** and grant the requested consent. The browser receives a short-lived token that is kept **in memory**, not stored in a cookie, localStorage or the repository.
 
@@ -207,7 +219,7 @@ The top header provides three clear destinations, without combining their playba
 
 - **🎧 Entertainment:** Existing audio-only discovery, artist search, genres, favorites, albums, local folders, and streaming providers. The large decorative hero is hidden to prioritize finding and playing music. Local folder tools are collapsed in the left sidebar so the genre browser has more room.
 - **🤸 Showdance:** The existing gymnastics and dance rehearsal workspace remains available for review by trainers. This navigation release does not add or change its routine-editing features.
-- **▶ YouTube:** A separate video viewing workspace using a **visible official YouTube embedded player**, not an extracted audio stream. Paste an HTTPS YouTube watch, short, live, or playlist URL to play when embedding is permitted. A search form opens YouTube search results in a new tab; it does not use a YouTube search API key. Switching away removes the embedded player URL so video playback stops.
+- **▶ YouTube:** A separate video viewing workspace using a **visible official YouTube embedded player**, not an extracted audio stream. Paste an HTTPS YouTube watch, short, live, or playlist URL to play when embedding is permitted. Search results appear inside the workspace using the YouTube Data API; users supply and can save their own restricted API key in the current browser. Switching away removes the embedded player URL so video playback stops.
 
 The Google account dropdown stays at the top right and remains dedicated to ArtistWave's optional Drive sync. No YouTube Premium or YouTube account access is requested; YouTube sign-in and subscription features are subject to YouTube's own embedded player behavior. Some YouTube videos cannot be embedded by their owners.
 
@@ -215,7 +227,7 @@ On smaller displays, workspace navigation remains accessible at the top, with th
 
 ### YouTube account continuation
 
-ArtistWave's **Google Drive sign-in** does not itself authenticate a YouTube browser session. The official embedded YouTube player may use an existing youtube.com session through the browser's cookies, subject to privacy settings. The YouTube workspace displays a context-sensitive connection hint when a Google account is signed into ArtistWave and offers **Continue with YouTube** in a user-initiated new tab to visit YouTube and sign in if required. No automatic YouTube sign-in is claimed, no third-party cookies are set by ArtistWave, and no YouTube API scope or account credential is requested.
+ArtistWave's **Google Drive sign-in** does not itself authenticate a YouTube browser session. The official embedded YouTube player may use an existing youtube.com session through the browser's cookies, subject to privacy settings. The YouTube workspace displays a context-sensitive connection hint when a Google account is signed into ArtistWave and offers **Continue with YouTube** in a user-initiated new tab to visit YouTube and sign in if required. No automatic YouTube sign-in is claimed and no YouTube account credential is requested. YouTube search uses an API key supplied by the user; it does not request access to the user's YouTube account.
 
 ## ArtistWave v3.1 — More genres for everyday music listening
 
@@ -266,7 +278,7 @@ No changes are made to YouTube embeds, Google sign-in, the Showdance workspace, 
 
 ## Install ArtistWave as a desktop app
 
-ArtistWave supports browser installation on compatible desktop and mobile browsers. On Chrome or Edge, open [ArtistWave](https://28121978444.github.io/ArtistWave/) and click **⬇ Install** or use the browser's **Install this site as an app** menu item. It opens as a dedicated app window and can be launched from the desktop or app launcher. Browser support and whether the install prompt appears vary by platform.
+ArtistWave supports browser installation on compatible desktop and mobile browsers. On Chrome or Edge, open [ArtistWave](https://acsdd.github.io/ArtistWave/) and click **⬇ Install** or use the browser's **Install this site as an app** menu item. It opens as a dedicated app window and can be launched from the desktop or app launcher. Browser support and whether the install prompt appears vary by platform.
 
 The installable app provides a **Mini Player** launcher shortcut pointing to `/ArtistWave/?mini=1`. It loads the compact full-height layout with its own audio engine when opened directly, without needing a second main ArtistWave browser window. The regular in-page pop-out still uses the original playback engine and remains available from the main player's Mini Player button.
 

@@ -1450,17 +1450,7 @@ function renderGenreTree(){
   $('genreFilterCount').textContent=query
     ?visible.length+' matching genre'+(visible.length===1?'':'s')
     :MUSIC_GENRES.length+' genres · explore styles and artists';
-  let lastGroup='';
-  for(const [index,genre] of visible.entries()){
-    const groupKey=genre.training?'performance':index<4&&MUSIC_GENRES.indexOf(genre)<4?'heritage':'everyday';
-    if(!query&&groupKey!==lastGroup){
-      if(groupKey!=='heritage'){
-        const heading=document.createElement('div');heading.className='genre-category-heading';
-        heading.textContent=groupKey==='performance'?'DANCE & PERFORMANCE':'MORE TO EXPLORE';
-        tree.append(heading);
-      }
-      lastGroup=groupKey;
-    }
+  for(const genre of visible){
     const group=document.createElement('div');group.className='genre-node';
     const open=Boolean(query)||expandedGenre.name===genre.name;
     const button=document.createElement('button');button.type='button';button.className='genre-top-button';
