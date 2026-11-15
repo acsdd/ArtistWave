@@ -254,6 +254,13 @@
   }
   function beginSignIn(){
     if(S.busy)return;
+    if(window.AudioWaveAuth){
+      S.busy=true;updateUI();status('Complete Google sign-in in your browser…');
+      window.AudioWaveAuth.signIn().then(connect)
+        .catch(error=>status('Sign-in failed: '+error.message,true))
+        .finally(()=>{S.busy=false;updateUI()});
+      return;
+    }
     S.clientId=($('googleClientId').value||'').trim();
     if(!validClient(S.clientId)){
       $('cloudSetup').open=true;

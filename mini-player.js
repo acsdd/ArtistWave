@@ -81,6 +81,8 @@
       document.body.classList.add('disconnected');
       $('miniConnection').textContent='Main player disconnected';
       $('miniPlaybackLabel').textContent='RECONNECT ARTISTWAVE';
+      $('miniAlwaysOnTop').hidden=true;
+      $('miniPlaylists').disabled=true;
       for(const id of ['miniPlay','miniNext','miniPrevious','miniSeek','miniShuffle','miniRepeat','miniVolume','miniFavorite','miniSave'])
         $(id).disabled=true;
       return;
@@ -110,6 +112,10 @@
       $(id).disabled=false;
     $('miniFavorite').disabled=!state.hasTrack;
     $('miniSave').disabled=!state.hasTrack;
+    const pin=$('miniAlwaysOnTop');
+    pin.hidden=typeof state.alwaysOnTop!=='boolean';
+    pin.setAttribute('aria-pressed',String(state.alwaysOnTop===true));
+    pin.textContent=state.alwaysOnTop?'On top: on':'On top: off';
     if(lastCover!==state.cover){
       lastCover=state.cover;
       const img=$('miniCoverImage');
@@ -125,14 +131,17 @@
       }
     }
     const saved=$('miniPlaylists');
-    if(saved && saved.dataset.signature!==JSON.stringify(state.playlists||[])){
-      saved.dataset.signature=JSON.stringify(state.playlists||[]);saved.replaceChildren();
-      for(const playlist of state.playlists||[]){
-        const button=document.createElement('button');button.type='button';button.className='queue-song';
-        button.textContent=playlist.name+' · '+playlist.count+' tracks';
-        button.onclick=()=>send('playlist',playlist.id);saved.append(button);
+    const playlists=state.playlists||[];
+    const signature=JSON.stringify(playlists);
+    saved.disabled=!playlists.length;
+    if(saved.dataset.signature!==signature){
+      saved.dataset.signature=signature;
+      saved.replaceChildren(new Option(playlists.length?'Select a playlist':'No saved playlists yet',''));
+      for(const playlist of playlists){
+        const option=new Option(playlist.name+' · '+playlist.count+' tracks',playlist.id);
+        option.disabled=!playlist.count;
+        saved.add(option);
       }
-      if(!saved.children.length)saved.textContent='No saved playlists yet.';
     }
     updateQueue(state.queue||[],state.selected,state.smartQueue||[]);
   }
@@ -140,6 +149,12 @@
   bind('miniPlay','play');bind('miniPrevious','previous');bind('miniNext','next');
   bind('miniShuffle','shuffle');bind('miniRepeat','repeat');
   bind('miniFavorite','favorite');bind('miniSave','save');
+  $('miniAlwaysOnTop').addEventListener('click',()=>send('alwaysOnTop'));
+  $('miniPlaylists').addEventListener('change',event=>{
+    const selection=event.target;
+    if(selection.value)send('playlist',selection.value);
+    selection.value='';
+  });
   $('miniSeek').addEventListener('input',event=>{draggingSeek=true;send('seek',Number(event.target.value)/1000)});
   $('miniSeek').addEventListener('change',()=>{draggingSeek=false;refresh()});
   $('miniVolume').addEventListener('input',event=>{draggingVolume=true;send('volume',event.target.value)});

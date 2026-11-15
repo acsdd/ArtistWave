@@ -1,16 +1,7 @@
-# Release verification — 2026-11-13
+# Release verification — 2026-11-15
 
-Status: local automated checks pass; release verification is incomplete.
+ArtistWave 3.4 accompanies AudioWave 0.2.0. The 92-test suite covers existing player/library behavior plus selected-genre surprise selection and hidden install controls.
 
-- JavaScript syntax checks: passed for every root JavaScript file.
-- Existing tests: 91 passed, zero failed using `node --test --test-isolation=none tests/*.test.cjs`.
-- Whitespace validation: `git diff --check` passed.
-- Default test process isolation is unavailable in this managed environment (`spawn EPERM`); no test assertions were disabled.
+AudioWave smoke checks exercise the bundled interface, Mini playlists/pin, viewport controls, desktop layout, Navidrome/Plex library browsing and fixture playback. The user confirmed Google desktop sign-in and right-edge Mini positioning, and accepted the latest library preview.
 
-Outstanding: clean-browser desktop/mobile review, real provider playback, local-file permissions, browser installation, hosted Pages/version verification, Google authorized-origin and real sign-in checks, and demo capture. Automated cloud tests use fixtures and do not establish real OAuth readiness.
-
-No deployment, account settings, repository visibility or public announcement was changed.
-
-## Mini playlist update
-
-Mini Player now lists saved playlists and starts playback through the existing playlist engine. The 91 existing tests pass after this change; interactive playlist browsing still needs a browser check. AudioWave requires these site changes to be deployed before its hosted player exposes the new playlist controls.
+Clean-browser/mobile review, live provider coverage, local-file permissions and hosted Pages review remain separate release checks. Fixture tests do not establish external service availability.

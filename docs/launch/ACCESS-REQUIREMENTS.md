@@ -4,7 +4,7 @@ This access list covers private release-preparation steps only. It does not auth
 
 ## Local project
 
-- Read and write files under `E:\GPT_Projects\28121978444\ArtistWave`.
+- Read and write files under the ArtistWave checkout.
 - Run the existing Node.js syntax checks and test suite from that checkout.
 - View the local app in a browser for desktop and mobile layout review.
 

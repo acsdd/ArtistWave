@@ -50,7 +50,7 @@ Add the verified site link only after the canonical deployment is reachable. Do 
 ## Current launch blockers
 
 - The README and in-app Google setup text use the `acsdd` site origin. GitHub reports the repository is **public** and Pages is enabled, which conflicts with the earlier private-preparation direction; do not change visibility or deploy as part of this checklist. Verify the live site and confirm that the existing Google OAuth client allows that origin.
-- The README opening and version label now describe the current v3.3 preview. The detailed feature history remains below for people who want implementation detail.
+- The README opening and version label now describe the current v3.4 preview. The detailed feature history remains below for people who want implementation detail.
 - The live `acsdd.github.io/ArtistWave/` address could not be confirmed from the available browser check. Verify it in a real browser and inspect the latest Pages workflow run.
 - A purpose-made SVG social preview is included; confirm the intended social platforms accept it or export a PNG before announcement. Provider behavior, Google sign-in, mobile layout, and browser installation still need a clean-user release pass. The actual captioned recording remains to be captured.
 

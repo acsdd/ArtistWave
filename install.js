@@ -3,16 +3,22 @@
 (function(){
   const button=document.getElementById('installAppButton');
   const status=document.getElementById('installAppStatus');
+  // Keep the install UI available for a future release.
+  const installEnabled=false;
   let deferredPrompt=null;
+  let statusTimer;
   const installed=()=>window.matchMedia?.('(display-mode: standalone)').matches||
     window.navigator?.standalone===true;
   function message(value){
-    if(!status)return;
+    if(!installEnabled||!status)return;
     status.textContent=value;
     status.hidden=false;
+    clearTimeout(statusTimer);
+    statusTimer=setTimeout(()=>{status.hidden=true},6000);
   }
   function update(){
     if(!button)return;
+    button.hidden=!installEnabled;
     if(installed()){
       button.textContent='✓ App';
       button.disabled=true;
@@ -32,7 +38,7 @@
     message('ArtistWave installed. Use its desktop or app launcher shortcut.');
   });
   button?.addEventListener('click',async()=>{
-    if(installed())return;
+    if(!installEnabled||installed())return;
     if(deferredPrompt){
       const prompt=deferredPrompt;deferredPrompt=null;
       try{
@@ -46,7 +52,7 @@
       message('To install: open the Chrome or Edge menu (⋮) and choose Install ArtistWave / Install this site as an app. On Safari use Add to Dock or Add to Home Screen. Browser support varies.');
     }
   });
-  if('serviceWorker' in navigator&&window.isSecureContext!==false){
+  if(!window.AudioWaveAuth&&'serviceWorker' in navigator&&window.isSecureContext!==false){
     window.addEventListener('load',()=>{
       navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(()=>{
         // Installation may still work without an offline shell.

@@ -78,6 +78,27 @@ test('Surprise Me chooses curated artists and respects genre filters',()=>{
   assert.ok(only.length>=1);
   assert.ok(only.some(x=>x.name==='Sabrina Carpenter'));
   assert.ok(only.every(x=>x.name==='Sabrina Carpenter'));
+  for(const genre of MUSIC_GENRES){
+    const selected=functions.discoverableArtists(MUSIC_GENRES,'',genre.name);
+    assert.ok(selected.length>0,genre.name);
+    assert.ok(selected.every(p=>p.genre.name===genre.name),genre.name);
+  }
+  assert.equal(functions.discoverableArtists(MUSIC_GENRES,'sabrina carpenter','Blues').length,0);
+});
+test('Surprise Me uses the selected genre through the button handler',()=>{
+  let chosen;
+  const elements={genreFilter:{value:''},genreFilterCount:{textContent:''}};
+  const context={
+    norm,Number,Object,Math,Set,
+    expandedGenre:{name:'Blues'},
+    $:id=>elements[id],
+    chooseCatalogArtist:(genre,section,style,name)=>{chosen={genre,name}}
+  };
+  vm.runInNewContext(source.slice(start,end)+source.slice(helpers,helperEnd)+';surpriseArtist()',context);
+  assert.equal(chosen.genre.name,'Blues');
+  context.expandedGenre.name='Jazz';
+  vm.runInNewContext('surpriseArtist()',context);
+  assert.equal(chosen.genre.name,'Jazz');
 });
 test('Surprise Me avoids previous artists when choices are available',()=>{
   const start=source.indexOf('function pickSurpriseArtist(');

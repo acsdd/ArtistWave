@@ -33,7 +33,7 @@
           <button type="button" id="studioNav" class="mode-tab studio-nav">🤸 Showdance</button>
           <button type="button" id="modeYoutube" class="mode-tab">▶ YouTube</button>
         </nav>
-        <div class="top-right"><button id="installAppButton" class="install-app-button" type="button" aria-label="Install ArtistWave as an app" title="Install ArtistWave">⬇ Install</button><button id="themeToggle" class="theme-toggle" type="button" aria-label="Switch to Day theme" aria-pressed="false">☀ Day</button><span class="version">V 3.3</span>
+        <div class="top-right"><button id="installAppButton" class="install-app-button" type="button" aria-label="Install ArtistWave as an app" title="Install ArtistWave" hidden>⬇ Install</button><button id="themeToggle" class="theme-toggle" type="button" aria-label="Switch to Day theme" aria-pressed="false">☀ Day</button><span class="version">V 3.4</span>
           <span id="installAppStatus" class="install-app-status" role="status" aria-live="polite" hidden></span>
           <details class="topbar-account-menu" id="accountMenu">
             <summary class="topbar-account-toggle" aria-label="Open account and cloud sync settings">☁ Account</summary>
@@ -78,6 +78,8 @@
         <button class="nav-item folder-reopen" id="reopenFolderNav" type="button" hidden><span>↻</span> Reopen saved folder</button>
         <button class="nav-item folder-forget" id="forgetFolderNav" type="button" hidden><span>×</span> Forget saved folder</button>
         <div class="folder-summary" id="folderSummary" aria-live="polite">No local folder selected</div>
+        <button class="nav-item" id="navidromeOpen" type="button" hidden>Navidrome library</button>
+        <button class="nav-item" id="plexOpen" type="button" hidden>Plex library</button>
       </details>
       <div class="side-divider"></div>
       
@@ -258,6 +260,7 @@
     </form>
   </dialog>
   <input id="folderInput" type="file" webkitdirectory directory multiple hidden />
+  <script src="navidrome.js" defer></script>
   <audio id="audio" preload="metadata"></audio>
   <script src="https://accounts.google.com/gsi/client" defer></script>
   <script src="cloud-sync.js" defer></script>

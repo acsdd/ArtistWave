@@ -7,7 +7,9 @@
   function state(){
     const audio=$('audio'),track=window.ArtistWaveLibrary?.getCurrent?.()||null;
     const duration=Number.isFinite(audio.duration)?audio.duration:0;
+    const pin=document.body.dataset?.miniAlwaysOnTop;
     return {
+      alwaysOnTop:pin===undefined?undefined:pin==='true',
       playlists:window.ArtistWavePlaylists?.list?.()||[],
       ready:true,title:track?.title||'Nothing playing yet',
       artist:track?.artist||'Find a song in ArtistWave',
@@ -30,10 +32,15 @@
     const audio=$('audio');
     if(action==='play')$('playButton').click();
     else if(action==='playlist')window.ArtistWavePlaylists?.play?.(value);
+    else if(action==='alwaysOnTop'&&document.body.dataset?.miniAlwaysOnTop!==undefined){
+      const settings=document.body.dataset;
+      settings.miniAlwaysOnTop=String(settings.miniAlwaysOnTop!=='true');
+    }
     else if(action==='next')$('nextButton').click();
     else if(action==='previous')$('previousButton').click();
     else if(action==='favorite'&&!$('favoriteCurrent').disabled)$('favoriteCurrent').click();
     else if(action==='save'&&!$('playlistSaveCurrent').disabled){
+      closeFallback();
       $('playlistSaveCurrent').click();
       // The playlist picker belongs to the main page; bring it to the front.
       window.focus();

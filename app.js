@@ -640,6 +640,8 @@ function clearPlaybackRecovery(){
 }
 function permittedTrackSources(track){
   return trackSources(track).filter(t=>
+    t.source==='NAVIDROME'?Boolean(window.AudioWaveNavidrome):
+    t.source==='PLEX'?Boolean(window.AudioWavePlex):
     t.source==='LOCAL'?sourceMode()!=='online':sourceMode()!=='local'&&providerEnabled(t.source.toLowerCase())
   );
 }
@@ -1397,9 +1399,10 @@ function matchingGenreEras(genre,section,query){
 }
 // Random artist discovery uses only the curated directory, never auto-plays a recording.
 const discoveryHistory=[];
-function discoverableArtists(genres,query){
+function discoverableArtists(genres,query,selectedGenre=null){
   const picks=[],seen=new Set();
   for(const genre of genres){
+    if(selectedGenre&&genre.name!==selectedGenre)continue;
     if(!genreSearchMatches(genre,query))continue;
     for(const section of genre.sections){
       for(const [style,artists] of matchingGenreEras(genre,section,query)){
@@ -1430,7 +1433,7 @@ function pickSurpriseArtist(picks,history,random=Math.random){
 }
 function surpriseArtist(){
   const query=norm($('genreFilter').value.trim());
-  const picks=discoverableArtists(MUSIC_GENRES,query);
+  const picks=discoverableArtists(MUSIC_GENRES,query,expandedGenre.name);
   const pick=pickSurpriseArtist(picks,discoveryHistory);
   if(!pick){
     $('genreFilterCount').textContent='No matching artists. Try another genre or clear the filter.';
@@ -1632,7 +1635,7 @@ window.ArtistWaveLibrary={
     render();updatePlayer();
     return available.length;
   },
-  playPlaylist:(tracks,index=0)=>{
+  playPlaylist:(tracks,index=0,label='My Playlists')=>{
     const previous=S.tracks[S.selected];
     clearAlbumQueue();
     // Invalidate any in-flight artist or catalog searches so their async
@@ -1644,7 +1647,7 @@ window.ArtistWaveLibrary={
     S.view='discover';
     S.selected=-1;
     S.artist='';
-    $('playlistHeading').textContent='Now playing · My Playlists';
+    $('playlistHeading').textContent='Now playing · '+label;
     playAt(index);
     return previous;
   }

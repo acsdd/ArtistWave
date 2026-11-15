@@ -516,6 +516,52 @@ body[data-mode="studio"] .studio-workspace{margin-top:0}
 
 /* Shared site-level header: do not nest navigation inside the changing main grid. */
 :root{--aw-header-height:72px}
+#navidromeOpen[hidden],#plexOpen[hidden]{display:none}
+.navidrome-dialog{
+  width:min(900px,calc(100vw - 32px));
+  max-height:calc(100dvh - 48px);
+  padding:24px;
+  color:var(--text);
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:14px;
+}
+.navidrome-dialog::backdrop{background:#000a}
+.navidrome-dialog [hidden]{display:none!important}
+.navidrome-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px}
+.navidrome-heading h2,.navidrome-heading h3{margin:0}
+.navidrome-dialog button{
+  min-height:40px;padding:9px 12px;border:1px solid #739781;border-radius:7px;
+  background:#294b39;color:#f1fff3;font-size:13px;font-weight:650;
+}
+.navidrome-dialog button:hover:not(:disabled){background:#3a654a}
+.navidrome-dialog button:disabled{opacity:.55;cursor:wait}
+.navidrome-dialog summary{cursor:pointer;padding:12px 0;font-weight:700}
+.navidrome-connection{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.navidrome-connection label:first-child,.navidrome-connection p,.navidrome-actions{grid-column:1/-1}
+.navidrome-connection label{display:grid;gap:6px;font-size:13px}
+.navidrome-dialog input,.navidrome-dialog select{
+  min-width:0;width:100%;padding:10px;border:1px solid var(--line);
+  border-radius:6px;background:var(--bg);color:var(--text);
+}
+.navidrome-connection p,#navidromeStatus{font-size:13px;line-height:1.5;color:var(--muted)}
+#navidromeStatus.error{color:#f0a58e}
+.navidrome-actions{display:flex;gap:10px;flex-wrap:wrap}
+.navidrome-search{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:18px 0}
+.navidrome-search input{flex:1;min-width:160px}
+.navidrome-search label{font-size:13px;font-weight:700}
+.navidrome-albums{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin:16px 0}
+.navidrome-albums .navidrome-album{display:flex;flex-direction:column;text-align:left;gap:7px;background:var(--bg);color:var(--text)}
+.navidrome-album img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:5px}
+.navidrome-album span{font-size:12px;color:var(--muted)}
+#navidromeAlbum{margin-top:24px;border-top:1px solid var(--line);padding-top:20px}
+.navidrome-track{display:flex;gap:8px;margin:8px 0}
+.navidrome-track button:first-child{flex:1;text-align:left}
+.navidrome-track button:last-child{flex-shrink:0}
+@media(max-width:600px){
+  .navidrome-connection{grid-template-columns:1fr}
+  .navidrome-track{flex-wrap:wrap}
+}
 .app-shell{
   display:grid;
   grid-template-columns:var(--sidebar) minmax(0,1fr);
@@ -611,6 +657,19 @@ body[data-mode="studio"] .studio-workspace{padding-top:22px}
 
 /* v3.1 sidebar readability: slightly wider navigation and more legible genres. */
 :root{--sidebar:282px}
+@media(min-width:701px){
+  body[data-mode="audio"] .app-shell>.sidebar{
+    grid-row:1 / span 2;
+    top:0;
+    height:100dvh;
+    min-height:0;
+  }
+  body[data-mode="audio"] .app-shell>.topbar{grid-column:2}
+  body[data-mode="audio"]:not(.mini-player-active) .player{left:var(--sidebar);width:auto}
+}
+@media(min-width:701px) and (max-width:1050px){
+  body[data-mode="audio"]:not(.mini-player-active) .player{left:232px}
+}
 @media(min-width:1061px){
   .app-shell{grid-template-columns:var(--sidebar) minmax(0,1fr)}
 }
@@ -989,6 +1048,61 @@ body[data-mode="audio"] .app-shell{
 /* Smart Queue: ephemeral listening order, independent from saved playlists. */
 .queue-toggle-button{display:inline-flex;align-items:center;gap:6px}
 .queue-toggle-button.active{color:var(--accent)}
+.playlist-actions > .text-button{
+  flex-shrink:0;
+  white-space:nowrap;
+  min-height:44px;
+  padding:10px 16px;
+  border:1px solid #86b896;
+  border-radius:8px;
+  background:#294b39;
+  color:#f1fff3;
+  font-size:14px;
+  font-weight:700;
+  line-height:1.3;
+}
+.playlist-actions > .text-button:hover:not(:disabled){
+  background:#3a654a;
+  border-color:#c5edce;
+}
+.playlist-actions > .text-button:focus-visible{
+  outline:3px solid #d6f8a5;
+  outline-offset:3px;
+}
+.playlist-actions > .text-button.active{
+  background:#d6f8a5;
+  color:#172b1d;
+}
+.playlist-actions > .text-button:disabled{
+  opacity:1;
+  color:#9ba8a0;
+  background:#202b25;
+  border-color:#4b5a50;
+  cursor:not-allowed;
+}
+[data-theme="day"] .playlist-actions > .text-button{
+  background:#315c3e;
+  color:#fff;
+  border-color:#244b30;
+}
+[data-theme="day"] .playlist-actions > .text-button:hover:not(:disabled){
+  background:#23492e;
+}
+[data-theme="day"] .playlist-actions > .text-button.active{
+  background:#d0eab4;
+  color:#17331f;
+}
+[data-theme="day"] .playlist-actions > .text-button:disabled{
+  background:#e0e7dc;
+  color:#62715f;
+  border-color:#a5b49f;
+}
+.playlist-title{flex-wrap:wrap}
+.playlist-actions{flex-wrap:wrap;gap:8px;max-width:100%}
+@media(max-width:700px){
+  .playlist-title{flex-wrap:wrap}
+  .playlist-actions{gap:8px}
+}
 #smartQueuePanel[hidden]{display:none!important}
 .smart-queue-panel{
   margin:20px 0 30px;padding:20px 22px;
@@ -1053,7 +1167,8 @@ body[data-mode="audio"] .app-shell{
   background:#142a23;color:#e3f4df;font-size:12px;line-height:1.6;
   z-index:150;box-shadow:0 14px 36px #0009;letter-spacing:0;
 }
-.install-app-status[hidden]{display:none!important}
+.install-app-button[hidden],.install-app-status[hidden]{display:none!important}
+.install-app-status{pointer-events:none}
 [data-theme="day"] .install-app-button{background:#e7f2df;color:#2d6036;border-color:#b7d2b4}
 [data-theme="day"] .install-app-button:hover:not(:disabled){background:#d7eacc}
 [data-theme="day"] .install-app-status{background:#fffefa;color:#31503a;border-color:#b9d0b7;box-shadow:0 14px 35px #355c3b28}

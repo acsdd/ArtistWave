@@ -33,7 +33,7 @@ test('website and standalone mini player advertise the install manifest',()=>{
   assert.match(html,/id="installAppStatus"/);
   assert.match(html,/src="install\.js" defer/);
 });
-test('installer saves native prompt for a user action and uses browser fallback',()=>{
+test('installer preserves future install support while hiding the current controls',()=>{
   assert.match(installer,/beforeinstallprompt/);
   assert.match(installer,/event\.preventDefault\(\)/);
   assert.match(installer,/await prompt\.prompt\(\)/);
@@ -47,14 +47,16 @@ test('installer saves native prompt for a user action and uses browser fallback'
   const doc={getElementById:id=>id==='installAppButton'?button:message};
   vm.runInNewContext(installer,{window:win,document:doc,navigator:{}});
   assert.equal(button.textContent,'⬇ Install');
+  assert.equal(button.hidden,true);
   assert.equal(button.disabled,false);
   return listeners.click().then(()=>{
-    assert.equal(message.hidden,false);
-    assert.match(message.textContent,/Chrome or Edge menu/);
+    assert.equal(message.hidden,true);
+    listeners.appinstalled();
+    assert.equal(message.hidden,true);
   });
 });
 test('service worker caches only same-origin app shell, not streams or cloud APIs',()=>{
-  assert.match(worker,/artistwave-shell-v1/);
+  assert.match(worker,/artistwave-shell-v[\d.]+/);
   assert.match(worker,/url\.origin!==SCOPE\.origin/);
   assert.match(worker,/paths\.has\(url\.pathname\)/);
   assert.match(worker,/request\.method!=='GET'/);

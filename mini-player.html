@@ -43,14 +43,18 @@
       </nav>
       <div class="mini-more">
         <button id="miniFavorite" class="mini-pill" type="button" aria-label="Toggle favorite">♡ <span>Favorite</span></button>
-        <button id="miniSave" class="mini-pill" type="button" aria-label="Add to a playlist">＋ <span>Playlist</span></button>
+        <button id="miniSave" class="mini-pill" type="button" aria-label="Add to a playlist">＋ <span>Save</span></button>
+        <button id="miniAlwaysOnTop" class="mini-pill" type="button" aria-label="Always on top" aria-pressed="true" hidden>On top: on</button>
       </div>
       <div class="mini-volume">
         <span aria-hidden="true">◖))</span>
         <input id="miniVolume" type="range" min="0" max="100" value="75" aria-label="Volume" />
         <span id="miniVolumeValue">75%</span>
       </div>
-      <section aria-label="Saved playlists"><h2>Your playlists</h2><div id="miniPlaylists"></div></section>
+      <section class="mini-playlists">
+        <label for="miniPlaylists">Your playlists</label>
+        <select id="miniPlaylists" disabled><option value="">No saved playlists yet</option></select>
+      </section>
       <section class="mini-queue" aria-labelledby="miniQueueHeading">
         <div class="queue-head"><h2 id="miniQueueHeading">Up next</h2><span id="miniQueueCount">0 tracks</span></div>
         <div id="miniQueueList" class="queue-list"><p class="queue-empty">Find music in the main ArtistWave window to start listening.</p></div>

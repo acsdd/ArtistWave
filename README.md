@@ -50,7 +50,7 @@ This project does not download from commercial streaming platforms or bypass lic
 
 ## Version
 
-**v3.3 private preview.** Provider and account flows still need a clean-browser release pass.
+**v3.4 preview.** Adds AudioWave Navidrome/Plex library browsing, genre-aware artist surprises, clearer playlist controls and improved Mini Player controls. See [release notes](CHANGELOG.md). Browser/mobile provider flows still need a clean-browser release pass.
 
 ## Artist / recording images (v1.2)
 
@@ -278,7 +278,7 @@ No changes are made to YouTube embeds, Google sign-in, the Showdance workspace, 
 
 ## Install ArtistWave as a desktop app
 
-ArtistWave supports browser installation on compatible desktop and mobile browsers. On Chrome or Edge, open [ArtistWave](https://acsdd.github.io/ArtistWave/) and click **⬇ Install** or use the browser's **Install this site as an app** menu item. It opens as a dedicated app window and can be launched from the desktop or app launcher. Browser support and whether the install prompt appears vary by platform.
+ArtistWave supports browser installation on compatible desktop and mobile browsers. On Chrome or Edge, open [ArtistWave](https://acsdd.github.io/ArtistWave/) and use the browser's **Install this site as an app** menu item. It opens as a dedicated app window and can be launched from the desktop or app launcher. Browser support and whether the install prompt appears vary by platform.
 
 The installable app provides a **Mini Player** launcher shortcut pointing to `/ArtistWave/?mini=1`. It loads the compact full-height layout with its own audio engine when opened directly, without needing a second main ArtistWave browser window. The regular in-page pop-out still uses the original playback engine and remains available from the main player's Mini Player button.
 
