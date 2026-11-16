@@ -2,6 +2,8 @@
 
 **Status:** `external_UAT` — released for acceptance testing outside the team. ![status](https://img.shields.io/badge/status-external_UAT-9cf37e?style=flat-square)
 
+**Site:** <https://acsdd.github.io/ArtistWave/> — The live app itself — open it in a browser.
+
 **Your artist, your station.**
 
 ArtistWave is a browser music workspace for exploring artists, genres and eras, previewing recordings from supported sources when available, and organizing online and local tracks into playlists. It also includes an in-app YouTube video search and player, a compact player, and a Showdance routine-planning workspace.
