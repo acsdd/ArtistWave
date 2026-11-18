@@ -13,10 +13,11 @@ function setup(){
   const audio={src:'',paused:true,readyState:4,play(){this.paused=false;return Promise.resolve()},pause(){this.paused=true},removeAttribute(){this.src=''}};
   const controls={shuffleButton:{classList:{remove(){}}}};
   let renderCount=0;
-  const box={S,norm,audio,render(){renderCount++},updatePlayer(){},show(){},$:(id)=>controls[id],trackKey:t=>norm(t.artist)+'|'+norm(t.title),current:()=>S.tracks[S.selected],Map,Number,sourceMode:()=> 'both',providerEnabled:()=>true,trackSources:t=>[t,...(t.alternates||[])],clearTimeout(){},setTimeout(){return 1}};
+  const events=[];
+  const box={S,norm,audio,window:{dispatchEvent:event=>events.push(event)},CustomEvent:class{constructor(type,options){this.type=type;this.detail=options.detail}},render(){renderCount++},updatePlayer(){},show(){},$:(id)=>controls[id],trackKey:t=>norm(t.artist)+'|'+norm(t.title),current:()=>S.tracks[S.selected],Map,Number,sourceMode:()=> 'both',providerEnabled:()=>true,trackSources:t=>[t,...(t.alternates||[])],clearTimeout(){},setTimeout(){return 1}};
   const code=app.slice(start,end)+'\n'+app.slice(app.indexOf('function clearPlaybackRecovery('),app.indexOf('const getJSON=',app.indexOf('function clearPlaybackRecovery(')))+
     '\n;({albumLabel,groupTracksByAlbum,playAlbum,nextAlbumTrack,clearAlbumQueue,playAt,next,tryNextSource,extractYear})';
-  return {S,audio,functions:vm.runInNewContext(code,box),get renderCount(){return renderCount}};
+  return {S,audio,events,functions:vm.runInNewContext(code,box),get renderCount(){return renderCount}};
 }
 const make=(title,collection,artist='Artist')=>({title,collection,artist,source:'ARCHIVE',url:'https://example.org/'+title+'.mp3',id:title});
 test('groups discontiguous tracks by album, preserving order and indices',()=>{
@@ -59,7 +60,7 @@ test('manual track selection exits album-only mode',()=>{
 });
 
 test('a failed preferred audio link switches to an alternate provider',()=>{
-  const {S,functions:f,audio}=setup();
+  const {S,functions:f,audio,events}=setup();
   S.tracks=[{...make('A','One'),source:'ARCHIVE',alternates:[{...make('A','One'),source:'AUDIUS',url:'https://api.audius.co/a.mp3'}]}];
   f.playAt(0);
   assert.equal(S.activeSource.source,'ARCHIVE');
@@ -68,6 +69,8 @@ test('a failed preferred audio link switches to an alternate provider',()=>{
   assert.equal(audio.src,'https://api.audius.co/a.mp3');
   assert.equal(f.tryNextSource(S.playbackToken),false);
   assert.equal(S.activeSource,null);
+  assert.equal(events[0].type,'artistwave:playback-error');
+  assert.equal(events[0].detail.track.title,'A');
 });
 test('starting a new song invalidates previous failure callbacks',()=>{
   const {S,functions:f}=setup();

@@ -65,7 +65,7 @@ jobs:
           mkdir -p site
           cp index.html app.js cloud-sync.js studio.js navigation.js playlists.js mini-player.html mini-player.css mini-player-host.js mini-player.js theme.js install.js sw.js manifest.webmanifest icon-192.png icon-512.png styles.css site/
           cp privacy.html social-preview.svg site/
-          cp navidrome.js site/
+          cp navidrome.js library-data.js my-music.js listening-session.js music.css site/
           touch site/.nojekyll
 
       - name: Configure GitHub Pages
