@@ -15,11 +15,11 @@ function harness(mode='both'){
   const S={artist:'Nita Strauss',tracks:[],onlineTracks:[],local:[],selected:-1,providerChecked:{},providerBusy:{},providerErrors:{},matchRequest:1,page:0,loading:false,archiveItemView:false};
   const norm=s=>String(s||'').normalize('NFKD').toLowerCase().replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim();
   let getJSON=async()=>({data:[]});
-  const context={S,norm,$:id=>widgets[id],sourceMode:()=>widgets.sourceMode.value,URLSearchParams,encodeURIComponent,
+  const context={S,norm,$:id=>widgets[id],sourceMode:()=>widgets.sourceMode.value,URL,URLSearchParams,encodeURIComponent,
     dedupeTracks:rows=>[...new Map(rows.map(row=>[norm(row.artist)+'|'+norm(row.title),row])).values()],
     getJSON:url=>getJSON(url),show(){},render(){},updatePlayer(){},loadMore:async()=>{},audio:{pause(){},removeAttribute(){}},
     Promise,Map,Object,albumArtwork:value=>typeof value==='string'?value:'',extractYear:value=>(String(value||'').match(/\b(18\d\d|19\d\d|20\d\d)\b/)||[])[1]||''};
-  const api=vm.runInNewContext(app.slice(start,end)+'\n;({providerArtistMatches,normalizeAudiusTracks,normalizeJamendoTracks,fetchAudiusTracks,fetchJamendoTracks,searchOnlineProvider,providerEnabled,loadOnlineProviders})',context);
+  const api=vm.runInNewContext(app.slice(start,end)+'\n;({providerArtistMatches,normalizeAudiusTracks,normalizeJamendoTracks,normalizeOpenverseTracks,normalizeCcMixterTracks,fetchOpenverseTracks,fetchAudiusTracks,fetchJamendoTracks,searchOnlineProvider,providerEnabled,loadOnlineProviders})',context);
   return {widgets,S,api,setFetch:fn=>{getJSON=fn}};
 }
 test('Audius normalizer rejects impostor artist names and gated streams',()=>{
@@ -43,6 +43,19 @@ test('Jamendo only returns HTTPS audio for the selected artist',()=>{
   ],'Nita Strauss');
   assert.equal(list.length,1);assert.equal(list[0].source,'JAMENDO');
   assert.equal(list[0].sourceUrl,'https://www.jamendo.com/track/77');
+});
+test('Openverse accepts exact creators, Commons music and safe attribution links',async()=>{
+  const {api,setFetch}=harness();
+  const good={id:'123',title:'A song',creator:'Nita Strauss',source:'wikimedia_audio',category:'music',url:'https://upload.wikimedia.org/a.ogg',foreign_landing_url:'https://commons.wikimedia.org/wiki/File:A.ogg',license_url:'https://creativecommons.org/licenses/by/4.0/',attribution:'A song by Nita Strauss'};
+  setFetch(async url=>{assert.match(url,/source=wikimedia_audio/);assert.match(url,/category=music/);return {results:[good,{...good,id:'2',creator:'Other'},{...good,id:'3',source:'fma'},{...good,id:'4',url:'https://bad.example/a.ogg'}]}});
+  const items=await api.fetchOpenverseTracks('Nita Strauss');
+  assert.equal(items.length,1);assert.equal(items[0].source,'OPENVERSE');assert.equal(items[0].attribution,good.attribution);assert.equal(items[0].licenseUrl,good.license_url);
+});
+test('ccMixter keeps exact artist matches and licensed audio while rejecting previews and unsafe hosts',()=>{
+  const {api}=harness();
+  const good={upload_id:1,upload_name:'Song',user_name:'airtone',user_real_name:'airtone',file_page_url:'https://ccmixter.org/files/airtone/1',license_url:'http://creativecommons.org/licenses/by/4.0/',license_name:'Attribution',files:[{download_url:'https://ccmixter.org/content/song.mp3',file_format_info:{mime_type:'audio/mpeg'},file_extra:{type:''}}]};
+  const rows=api.normalizeCcMixterTracks([good,{...good,upload_id:2,user_name:'other',user_real_name:'other'},{...good,upload_id:3,files:[{...good.files[0],download_url:'https://other.example/a.mp3'}]},{...good,upload_id:4,files:[{...good.files[0],file_extra:{type:'preview'}}]}],'airtone');
+  assert.equal(rows.length,1);assert.equal(rows[0].licenseUrl,'https://creativecommons.org/licenses/by/4.0/');assert.match(rows[0].attribution,/airtone/);
 });
 test('Audius fetch finds an exact user and only fetches that user tracks',async()=>{
   const {api,setFetch}=harness();

@@ -41,6 +41,10 @@ For browsers that restrict requests on `file://` pages, run `python -m http.serv
 
 ## Limitations
 
+**Experimental Openverse / Wikimedia Commons source:** opt in under online providers to search Openverse's index for music by the selected creator. Results link to the Commons file page and license, and show available attribution. Coverage depends on how Openverse classifies and credits files, so an artist may have no results. Playback and availability depend on Wikimedia and the file's license. Other Openverse sources are not enabled in this experiment.
+
+**Experimental ccMixter source:** in AudioWave, enable ccMixter under online providers. Search uses the selected artist's exact ccMixter username or display name and links each result to its file page and license. Playback depends on ccMixter's media server; access can be blocked by the service or network. Free Music Archive and Musopen links open those sites' own players.
+
 MusicBrainz provides artist identification, **not audio playback**. Internet Archive may lack licensed commercial releases; choosing an artist does not guarantee playable tracks. Artist attribution on Archive records can be incorrect or missing. Playback depends on file availability, browser codec support and third-party APIs. Some browsers require the HTTP server method above. Internet access is required for online search and streaming.
 
 This project does not download from commercial streaming platforms or bypass licensing restrictions.
