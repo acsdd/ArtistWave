@@ -30,8 +30,8 @@ function setup(){
 test('queue UI is present and tracks have Play Next and Add to Queue actions',()=>{
   for(const id of ['smartQueueToggle','smartQueuePanel','smartQueueClear','smartQueueClose','smartQueueList','smartQueueCount'])
     assert.ok(html.includes('id="'+id+'"'),id);
-  assert.match(app,/nextSong\.onclick=\(\)=>addToSmartQueue\(t,true\)/);
-  assert.match(app,/addQueue\.onclick=\(\)=>addToSmartQueue\(t,false\)/);
+  assert.match(app,/nextSong\.onclick=\(\)=>\{addToSmartQueue\(t,true\)/);
+  assert.match(app,/addQueue\.onclick=\(\)=>\{addToSmartQueue\(t,false\)/);
 });
 test('Play Next puts songs ahead of ordinary additions without mutating saved objects',()=>{
   const {S,functions:f}=setup();
