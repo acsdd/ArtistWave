@@ -68,3 +68,23 @@ test('folder importer accepts async recursive iterables and deduplicates repeate
   await f.importLocalFiles(entries(),{folder:true});
   assert.equal(S.local.length,2);
 });
+
+test('desktop folder selection opens the directory input directly',async()=>{
+  const begin=app.indexOf('async function chooseLocalFolder()');
+  const end=app.indexOf('\nfunction updatePlayer()',begin);
+  const events=[];
+  const window={AudioWaveDesktop:{folderPicker:'file-input'},showDirectoryPicker:()=>{events.push('picker');throw Error('unexpected picker')}};
+  const choose=vm.runInNewContext(app.slice(begin,end)+'\nchooseLocalFolder',{window,S:{importingFolder:false},$:()=>({click:()=>events.push('directory input')}),show:()=>{}});
+  await choose();
+  assert.deepEqual(events,['directory input']);
+});
+
+test('browser folder selection still imports and remembers its handle',async()=>{
+  const begin=app.indexOf('async function chooseLocalFolder()');
+  const end=app.indexOf('\nfunction updatePlayer()',begin);
+  const handle={name:'Music'},events=[];
+  const context={window:{showDirectoryPicker:async()=>handle},S:{importingFolder:false},importFolderHandle:async value=>events.push(['import',value.name]),savedFolderHandle:async value=>{events.push(['save',value.name]);return true},updateSavedFolderUI:()=>events.push(['update']),$:()=>({click:()=>events.push(['input'])}),show:()=>{}};
+  const choose=vm.runInNewContext(app.slice(begin,end)+'\nchooseLocalFolder',context);
+  await choose();
+  assert.deepEqual(events,[['import','Music'],['save','Music'],['update']]);
+});

@@ -95,3 +95,17 @@ test('failed Audius does not block Jamendo playback results',async()=>{
   assert.equal(S.onlineTracks[0].source,'JAMENDO');
   assert.match(S.providerErrors.audius,/outage/);
 });
+
+test('search status reports progress and keeps provider failures in expandable details',()=>{
+  const begin=app.indexOf('function refreshProviderStatus(){'),end=app.indexOf('\nasync function fetchAudiusTracks',begin);
+  const nodes={sourceIssues:{hidden:true,open:false},sourceIssuesText:{textContent:''}};
+  const S={tracks:[],providerErrors:{openverse:'Service returned 401'},providerBusy:{archive:true},loading:false};
+  let current='',isError=false;
+  const context={S,$:id=>nodes[id],onlineProviderIds:{archive:'a',openverse:'o'},providerEnabled:()=>true,sourceMode:()=> 'both',show:(msg,error)=>{current=msg;isError=error}};
+  const update=vm.runInNewContext(app.slice(begin,end)+'\nrefreshProviderStatus',context);
+  update();assert.equal(current,'Finding songs… 0 found so far.');assert.equal(isError,false);assert.equal(nodes.sourceIssues.hidden,false);assert.equal(nodes.sourceIssuesText.textContent,'Openverse: Service returned 401');
+  S.tracks=[{}];update();assert.equal(current,'Finding songs… 1 found so far.');
+  S.providerBusy.archive=false;update();assert.equal(current,'1 song found.');assert.equal(nodes.sourceIssues.hidden,false);
+  S.tracks=[];S.providerErrors.archive='Offline';update();assert.match(current,/Couldn’t search/);assert.equal(isError,true);
+  S.providerErrors={};update();assert.equal(current,'No songs found.');assert.equal(nodes.sourceIssues.hidden,true);
+});

@@ -75,3 +75,14 @@ test('creating a playlist from the track picker saves the pending track',()=>{
   assert.equal(f.current().tracks.length,1);
   assert.equal(f.current().tracks[0].title,'Song');
 });
+test('saving an album preserves order, skips duplicates and respects the track limit',()=>{
+ const start=source.indexOf('  function addPendingAlbum('),end=source.indexOf('  function renderChoices()',start);
+ const {cleanTrack,identity}=cleaners();
+ const a={title:'One',artist:'Band',source:'ARCHIVE',url:'https://example.org/one.mp3'};
+ const b={title:'Two',artist:'Band',source:'ARCHIVE',url:'https://example.org/two.mp3'};
+ const c={title:'Three',artist:'Band',source:'ARCHIVE',url:'https://example.org/three.mp3'};
+ const setup="let pendingAlbum=input,selected='';let notice='';const save=()=>{};const notify=s=>notice=s;";
+ const f=vm.runInNewContext(setup+source.slice(start,end)+'\n;({addPendingAlbum,getNotice:()=>notice})',{input:[a,b,c],identity,cleanTrack,Set});
+ const playlist={id:'x',name:'Road',tracks:[...Array.from({length:348},(_,i)=>({...a,url:'https://example.org/'+i})),a]};
+ f.addPendingAlbum(playlist);assert.equal(playlist.tracks.length,350);assert.equal(playlist.tracks[349].title,'Two');assert.match(f.getNotice(),/1 already present/);assert.match(f.getNotice(),/1 exceeded/);
+});

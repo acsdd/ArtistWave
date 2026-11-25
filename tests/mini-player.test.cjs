@@ -21,7 +21,7 @@ test('mini player has a real full-height pop-out entry and self-contained contro
   const workflow=fs.readFileSync('.github/workflows/pages.yml','utf8');
   for(const asset of ['mini-player.html','mini-player.css','mini-player-host.js','mini-player.js'])
     assert.ok(workflow.includes(asset),asset);
-  assert.match(hostScript,/width=380/);
+  assert.match(hostScript,/width=430/);
   assert.match(hostScript,/availHeight/);
   assert.match(hostScript,/window\.open\('mini-player\.html'/);
   assert.match(hostScript,/else showFallback\(\)/);
@@ -81,7 +81,7 @@ test('popup-blocked browsers get an accessible full-height in-page mini player',
   f.node('openMiniPlayer').click();
   assert.equal(f.node('miniPlayerFallback').hidden,false);
   assert.equal(f.node('miniPlayerFallbackFrame').src,'mini-player.html?embedded=1');
-  assert.ok(f.calls.some(x=>Array.isArray(x)&&x[0]==='window.open'&&x[3].includes('width=380')));
+  assert.ok(f.calls.some(x=>Array.isArray(x)&&x[0]==='window.open'&&x[3].includes('width=430')));
   f.window.ArtistWaveMiniHost.closeFallback();
   assert.equal(f.node('miniPlayerFallback').hidden,true);
   const css=fs.readFileSync('styles.css','utf8');
