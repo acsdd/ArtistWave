@@ -40,6 +40,7 @@ jobs:
           test -s mini-player-host.js
           test -s mini-player.js
           test -s experience.js
+          test -s audio-output.js
           test -s theme.js
           test -s install.js
           test -s sw.js
@@ -56,6 +57,7 @@ jobs:
           node --check mini-player-host.js
           node --check mini-player.js
           node --check experience.js
+          node --check audio-output.js
           node --check theme.js
           node --check install.js
           node --check sw.js
@@ -67,6 +69,7 @@ jobs:
           mkdir -p site
           cp index.html app.js cloud-sync.js studio.js navigation.js playlists.js mini-player.html mini-player.css mini-player-host.js mini-player.js theme.js install.js sw.js manifest.webmanifest icon-192.png icon-512.png styles.css site/
           cp privacy.html social-preview.svg experience.js site/
+          cp audio-output.js site/
           cp navidrome.js library-data.js my-music.js listening-session.js music.css site/
           touch site/.nojekyll
 
